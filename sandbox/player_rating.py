@@ -72,12 +72,3 @@ for tm in tqdm(range(0, len(teams))): # ~4min to run
     
 
 team_ratings.to_pickle("./team_ratings.pkl")
-
-    
-    
-
-        
-        
-
-
-
