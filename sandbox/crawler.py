@@ -101,10 +101,6 @@ for row in html_reduced.find_all('tr', id=re.compile('^g_1_')):
 print('Number of matches found: ' + str(len(identifiers)))
 
 
-
-
-
-
 # Now all the identifiers are known, it can crawl through all matches and save them as html in a folder
 
 # Store the source codes in...
