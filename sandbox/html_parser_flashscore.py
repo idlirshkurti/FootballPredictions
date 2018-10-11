@@ -19,7 +19,7 @@ import os
 import datetime
 
 # Creating an empty dataframe
-df = pd.DataFrame(columns=["DateTime", "Season", "PlayingRound", "HomeTeam", "AwayTeam", "HomeScore", "AwayScore", "HomeHalfTimeScore", "AwayHalfTimeScore", "HomeSecondHalfScore", "AwaySecondHalfScore"])
+df = pd.DataFrame(columns=["DateTime", "Season", "PlayingRound", "HomeTeam", "AwayTeam", "HomeScore", "AwayScore", "HomeHalfTimeScore", "AwayHalfTimeScore", "HomeSecondHalfScore", "AwaySecondHalfScore", "Spectators"])
 df['DateTime'] = pd.to_datetime(df['DateTime'])
 df['PlayingRound'] = pd.to_numeric(df['PlayingRound'])
 df['HomeScore'] = pd.to_numeric(df['HomeScore'])
@@ -27,6 +27,7 @@ df['AwayScore'] = pd.to_numeric(df['AwayScore'])
 df['HomeHalfTimeScore'] = pd.to_numeric(df['HomeHalfTimeScore'])
 df['HomeSecondHalfScore'] = pd.to_numeric(df['HomeSecondHalfScore'])
 df['AwaySecondHalfScore'] = pd.to_numeric(df['AwaySecondHalfScore'])
+df['Spectators'] = pd.to_numeric(df['Spectators'])
 
 
 path = 'C:/Users/Diederik/Desktop/gitrepo_fb_preds/Eredivisie_2016-2017'
@@ -41,7 +42,7 @@ for i in os.listdir(path):
         print (x)
         x = x + 1
 
-        # file = "C:/Users/Diederik/Desktop/gitrepo_fb_preds/\parsetest/ADO_AJA_samenvatting-wedstrijd.html"
+        # file = "C:/Users/Diederik/Desktop/gitrepo_fb_preds/Eredivisie_2016-2017/GRO_EXC_samenvatting-wedstrijd.html"
         File = open(file, "r")   
         Soup = bs4(File, 'html5lib')
         
@@ -92,13 +93,35 @@ for i in os.listdir(path):
         
         # Parsing the number of spectators
         ReducedSpec = Soup.find("table", {"class" : "parts match-information"})
-        ReducedSpec = ReducedSpec.findChildren()
+        ReducedSpec = ReducedSpec.find_all("tr", {"class" : "content"})
+        
+        if len(ReducedSpec) == 2:
+            ReducedSpec = ReducedSpec[1].td.contents[0].split("\\")
+        elif len(ReducedSpec) == 1:
+            ReducedSpec = ReducedSpec[0].td.contents[0].split("\\")
+        else:
+            ReducedSpec = "ERROR CHECK SCRIPT"
+            print ("error in Spectators")
+            
+        
+        search = "Toeschouwers"
+        
+        for item in ReducedSpec:
+            if search in item:
+                Spectators = item
+                
+        Spectators = re.sub(r'\D', '', Spectators)
+        
+        # Parsing the referee
+                
+            
+            
        
         
         
         
         # Add all variables to the dataframe
-        NewInput = pd.DataFrame({'DateTime' : pd.to_datetime(DateTime), 'Season' : [Season], 'PlayingRound' : pd.to_numeric(PlayingRound), 'HomeTeam' : [HomeTeam], 'AwayTeam' : [AwayTeam], 'HomeScore' : pd.to_numeric(HomeScore), 'AwayScore' : pd.to_numeric(AwayScore), 'HomeHalfTimeScore' : pd.to_numeric(HomeHalfTimeScore), 'AwayHalfTimeScore' : pd.to_numeric(AwayHalfTimeScore), 'HomeSecondHalfScore' : pd.to_numeric(HomeSecondHalfScore), 'AwaySecondHalfScore' : pd.to_numeric(AwaySecondHalfScore)           })
+        NewInput = pd.DataFrame({'DateTime' : pd.to_datetime(DateTime), 'Season' : [Season], 'PlayingRound' : pd.to_numeric(PlayingRound), 'HomeTeam' : [HomeTeam], 'AwayTeam' : [AwayTeam], 'HomeScore' : pd.to_numeric(HomeScore), 'AwayScore' : pd.to_numeric(AwayScore), 'HomeHalfTimeScore' : pd.to_numeric(HomeHalfTimeScore), 'AwayHalfTimeScore' : pd.to_numeric(AwayHalfTimeScore), 'HomeSecondHalfScore' : pd.to_numeric(HomeSecondHalfScore), 'AwaySecondHalfScore' : pd.to_numeric(AwaySecondHalfScore), 'Spectators' : pd.to_numeric(Spectators)           })
         df = df.append(NewInput)
 
 
