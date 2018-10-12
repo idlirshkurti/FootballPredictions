@@ -80,7 +80,7 @@ for i in tqdm.tqdm(range(0,len(AwayCols))):
     new_away = AwayColumns[i]
     AllColumns.append(new_away)
   
-
+AllColumns.append('Match_ID')
 # Create empty data frame
 df_full = pd.DataFrame(columns = np.unique(AllColumns))
 
@@ -95,28 +95,41 @@ df_full.loc[0,:] = None
 
 
 for j in tqdm.tqdm(range(len(files_txt))):
+    
     match = files_txt[j]
-
+        
     file = open('./example_html/Eredivisie_2016-2017/' + match)
     soup = bs4(file, "html5lib")
+    Title = soup.title.contents[0]
+    Title = Title.split("|")[0]
+    Title = Title.strip()
+    Title = Title.split(" ")
+    HomeTeam = Title[0]
+    AwayTeam = Title[2]  
+    DateTime = soup.find_all("div", {"class" : "info-time mstat-date"})[0].contents[0]
+    DateTime = DateTime.replace(".", "_")
+    DateTime = DateTime.replace(" ", "_")  
+
+    
+    df_full.loc[j, 'Match_ID'] = HomeTeam + "_" + AwayTeam + "_" + DateTime
     
     overall_stats = soup.findAll("div", {"id" : 'tab-statistics-0-statistic'})[0]
     home_titles = overall_stats.find_all("div", {"class" : 'statText statText--titleValue'})
     away_titles = overall_stats.find_all("div", {"class" : 'statText statText--titleValue'})
     
-    for i in tqdm.tqdm(range(0,len(home_titles))):
+    for i in range(0,len(home_titles)):
         home_titles[i] = home_titles[i].contents
         
-    for i in tqdm.tqdm(range(0,len(away_titles))):
+    for i in range(0,len(away_titles)):
         away_titles[i] = away_titles[i].contents 
     
     home_stats = []
-    for i in tqdm.tqdm(range(0,len(home_titles))):
+    for i in range(0,len(home_titles)):
         home_stats_new = overall_stats.find_all("div", {"class" : 'statText statText--homeValue'})[i].contents
         home_stats.append(home_stats_new)
         
     away_stats = []
-    for i in tqdm.tqdm(range(0,len(away_titles))):
+    for i in range(0,len(away_titles)):
         away_stats_new = overall_stats.find_all("div", {"class" : 'statText statText--awayValue'})[i].contents
         away_stats.append(away_stats_new)
         
@@ -126,12 +139,12 @@ for j in tqdm.tqdm(range(len(files_txt))):
     away_titles = [away + cols for cols in away_titles]
     
     home_titles_new = []
-    for i in tqdm.tqdm(range(0,len(home_titles))):
+    for i in range(0,len(home_titles)):
             new = "".join(home_titles[i])
             home_titles_new.append(new)
     
     away_titles_new = []
-    for i in tqdm.tqdm(range(0,len(away_titles))):
+    for i in range(0,len(away_titles)):
             new = "".join(away_titles[i])
             away_titles_new.append(new)
             
@@ -144,14 +157,14 @@ for j in tqdm.tqdm(range(len(files_txt))):
     del home_titles_new, away_titles_new
         
     all_titles = []
-    for i in tqdm.tqdm(range(0,len(away_titles))):
+    for i in range(0,len(away_titles)):
         new_home = home_titles[i]
         all_titles.append(new_home)
         new_away = away_titles[i]
         all_titles.append(new_away)
       
     all_stats = []
-    for i in tqdm.tqdm(range(0,len(home_stats))):
+    for i in range(0,len(home_stats)):
         new_home = home_stats[i]
         all_stats.append(new_home)
         new_away = away_stats[i]
