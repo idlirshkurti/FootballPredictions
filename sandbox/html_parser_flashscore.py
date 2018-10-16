@@ -30,7 +30,7 @@ df['AwaySecondHalfScore'] = pd.to_numeric(df['AwaySecondHalfScore'])
 df['Spectators'] = pd.to_numeric(df['Spectators'])
 
 
-path = 'C:/Users/Diederik/Desktop/gitrepo_fb_preds/Eredivisie_2016-2017'
+path = 'C:/Users/862371/Desktop/FootballPredictions-master/data/Eredivisie_2016-2017'
 
 # Looking for only the matches with 'samenvatting' in it
 x = 1
@@ -55,7 +55,8 @@ for i in os.listdir(path):
         
         # Parsing for the datetime of the match
         DateTime = Soup.find_all("div", {"class" : "info-time mstat-date"})[0].contents[0]
-        DateTime = DateTime.replace(".", "-")
+        DateTime = DateTime.replace(".", "_")
+        DateTime = DateTime.replace(" ", "_")
         
         
         # Parsing for the season of the match
@@ -127,4 +128,4 @@ for i in os.listdir(path):
 
 
 # Print all to CSV
-df.to_csv("C:/Users/Diederik/Desktop/gitrepo_fb_preds\parsetest/test2.csv", index=False, encoding="utf8", sep=";")
+df.to_csv("C:/Users/862371/Desktop/FootballPredictions-master/output/test.csv", index=False, encoding="utf8", sep=";")
